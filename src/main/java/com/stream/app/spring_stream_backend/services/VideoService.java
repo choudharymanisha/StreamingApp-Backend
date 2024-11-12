@@ -11,4 +11,5 @@ public interface VideoService {
     Video get(String videoId);
     Video getByTitle(String title);
     List<Video> getAll();
+    String processVideo (String videoId,MultipartFile file);
 }

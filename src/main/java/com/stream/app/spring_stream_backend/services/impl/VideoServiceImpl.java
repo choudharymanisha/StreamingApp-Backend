@@ -23,6 +23,9 @@ public class VideoServiceImpl implements VideoService {
 
 @Value("${files.video}")
 String DIR;
+@Value("${file.video.hsl}")
+String HSL_DIR;
+
     private VideoRepository videoRepository;
     public VideoServiceImpl(VideoRepository videoRepository) {
         this.videoRepository = videoRepository;
@@ -31,7 +34,16 @@ String DIR;
 
 @PostConstruct
 public void init(){
+
     File file = new File(DIR);
+   try{
+       Files.createDirectories(Paths.get(HSL_DIR));
+
+   }
+   catch(IOException e){
+       throw new RuntimeException(e);
+
+    }
     if(!file.exists()){
         file.mkdir();
         System.out.println("folder created");
@@ -86,5 +98,28 @@ public void init(){
     public List<Video> getAll() {
 
         return videoRepository.findAll();
+    }
+    @Override
+    public String processVideo (String videoId ,MultipartFile file){
+        Video video = this.get(videoId);
+        String filepath = video.getFilePath();
+        Path videoPath = Paths.get(filepath);
+          String output360p = HSL_DIR+"/360p/";
+        String output720p = HSL_DIR+"/720p/";
+        String output1080p = HSL_DIR+"/1080p/";
+        try{
+            Files.createDirectories(Paths.get(output360p));
+            Files.createDirectories(Paths.get(output720p));
+            Files.createDirectories(Paths.get(output1080p));
+        }catch(IOException ex){
+            throw new RuntimeException("video processing fail");
+
+        }
+        return null;
+
+
+
+
+
     }
 }
